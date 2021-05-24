@@ -1,0 +1,18 @@
+#$ -S /bin/bash
+#$ -N make_mod
+#$ -V
+#$ -cwd
+#$ -o /share/ClusterShare/software/contrib/singularity/logs
+#$ -e /share/ClusterShare/software/contrib/singularity/logs 
+#$ -l mem_requested=16G 
+#$ -m bae 
+#$ -M j.reeves@garvan.org.au 
+
+set -euxo 
+
+echo "Image cache: " $image_cache
+echo "Image: " $image
+echo "Tag: " $tag
+
+cd $image_cache
+singularity pull docker://${image}:${tag}

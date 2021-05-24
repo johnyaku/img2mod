@@ -1,0 +1,13 @@
+# Wrapper for containerised COMMAND version TAG
+
+# Define which image to run
+image_cache=CACHE
+image=IMAGE
+tag=TAG
+command=COMMAND
+image_file=${image_cache}/${command}_${tag}.sif
+
+# run image, binding /share and passing parameters through to COMMAND
+# Remove the --no-home flat to allow /home/$USER to be bound WITH CARE -- some images will break
+singularity exec --cleanenv --no-home -B /share $image_file $command $@
+

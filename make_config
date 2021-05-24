@@ -1,0 +1,35 @@
+#! /bin/bash
+
+# Create config file to be used to create a module
+ 
+read -p "Enter docker pull string: " docker pull string
+
+IFS=":"
+declare -a field=($string)
+
+image=${field[0]}
+tag=${field[1]}
+
+IFS="/"
+declare -a field=($image)
+
+read -p "Command [${field[-1]}]: " command
+command=${command:-${field[-1]}}
+
+read -p "Reference URL: " reference
+reference=${reference:-"(reference not specified)"}
+IFS=" "
+
+config_filename=${command}_${tag}.config
+touch $config_filename
+echo "image=$image" >> $config_filename 
+echo "tag=$tag" >> $config_filename
+echo "command=$command" >> $config_filename
+echo "reference=$reference" >> $config_filename
+echo
+echo "Created config file as $config_filename"
+echo
+cat $config_filename
+echo
+echo "To create wrapper file and modulefile..."
+echo "make_mod $config_filename"

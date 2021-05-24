@@ -1,0 +1,61 @@
+#! /bin/bash
+
+set -e
+
+# Read in parameters
+config=$1
+set -o allexport
+source $config
+# TODO: set $image_cache in modulefile
+# image_cache=/share/ClusterShare/software/contrib/singularity
+installation_dir=/share/ClusterShare/software/contrib/johree/img2mod
+set +o allexport
+
+# Report config values
+echo "Image cache:" $image_cache
+echo "Image: " $image
+echo "Tag: " $tag
+echo "Command: " $command
+echo "Reference: " $reference
+
+# Copy wrapper script template and prepare for editing
+command_path=${image_cache}/wrappers/${command}/${tag}
+mkdir -p $command_path
+cp $installation_dir/wrapper.template $command_path/$command
+cd $command_path
+echo "Creating wrapper for $command at $command_path"
+
+# Replace fields with variables
+sed -i "s|CACHE|$image_cache|g" $command
+sed -i "s|IMAGE|$image|g" $command
+sed -i "s|TAG|$tag|g" $command
+sed -i "s|COMMAND|$command|g" $command
+# Make wrapper executable
+chmod +x $command
+echo "Wrapper created"
+
+# Copy modulefile template and prepare for editing
+module_path=/share/ClusterShare/Modules/modulefiles/contrib/centos7.8/${USER}/${command}
+cd $image_cache
+mkdir -p $module_path
+cp $installation_dir/modulefile.template $module_path/$tag
+cd $module_path
+echo "Creating modulefile for $command version $tag at $module_path"
+
+# Replace fields with variables
+sed -i "s|CACHE|$image_cache|g" $tag
+sed -i "s|COMMAND|$command|g" $tag
+sed -i "s|TAG|$tag|g" $tag
+sed -i "s|USER|$USER|g" $tag
+sed -i "s|REFERENCE|$reference|g" $tag
+echo "Modulefile created"
+
+# Download docker image and convert to singularity format (SIF)
+# Computationally intensive, so submit as a job
+cd $installation_dir
+qsub make_mod.sge 
+echo "It may take a few minutes to download and convert the Singularity image"
+echo "You will receive an email notification when it is ready"
+echo
+echo "Load the module as follows: "
+echo "module load ${USER}/${command}/${tag}"
