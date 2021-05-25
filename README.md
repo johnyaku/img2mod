@@ -38,6 +38,10 @@ Both the wrapper and the modulefile are moved to the appropriate locations, as s
 Finally, the script submits a qsub job to download and convert the image to singularity format.
 The user will receive email notifications when the job starts and finishes.
 
+Note that the wrapper template binds the paths in the SINGULARITY_BIND environment variable.
+Users who wish to bind custom paths or volumes are encourage to set this variable in their .bashrc file.
+If this value is not set then /share will be bound by default.
+
 ## Special cases
 
 ### Fake home
