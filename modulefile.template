@@ -21,5 +21,6 @@ prepend-path PATH ${prefix}
 # Don't forget to escape \[ characters in usage statements.
 if { [ module-info mode load ] } {
     puts stderr "See REFERENCE for information on how to use COMMAND"
+    puts stderr "When using this tool, your fake home directory is CACHE/wrappers/COMMAND/TAG/home/USER"
 }
 
