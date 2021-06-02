@@ -7,10 +7,13 @@ tag=TAG
 command=COMMAND
 image_file=${image_cache}/${command}_${tag}.sif
 
+fake_home=${image_cache}/wrappers/${command}/${tag}/home/$USER
+mkdir -p $fake_home
+
 # run image, binding /share and passing parameters through to COMMAND
 # Remove the --no-home flat to allow /home/$USER to be bound WITH CARE -- some images will break
 singularity exec --cleanenv --no-home \
   --bind ${SINGULARITY_BIND:-/share} \
-  --bind ${image_cache}/${command}/${tag}/fakehome:$HOME \
+  --bind ${fake_home}:$HOME \
   $image_file $command $@
 
