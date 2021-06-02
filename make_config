@@ -2,6 +2,13 @@
 
 # Create config file to be used to create a module
  
+echo "Search Biocontainers (https://biocontainers.pro/registry) or DockerHub (https://hub.docker.com/)."
+echo "No need to create an account to use this tool, although there are other good reasons to sign up."
+echo "Select [Packages and Containers] (Biocontainers) or [Tags] (DockerHub)."
+echo "Find the version you want to install and click the [copy] icon next to the [docker pull] string for that tag/version"
+echo "Note: using [latest] breaks reproducibility and so is not recommended."
+echo
+
 read -p "Enter docker pull string: " docker pull string
 
 IFS=":"
@@ -10,11 +17,31 @@ declare -a field=($string)
 image=${field[0]}
 tag=${field[1]}
 
+echo
+echo "Detected the following image and tag..."
+echo "Image: $image"
+echo "Tag: $tag"
+echo
+
+echo "Enter the containerised command."
+echo "Usually this is the same as the image name, but not always."
+echo "For example, the image name for VEP is [ensembl-vep] but the command is [vep]."
+echo "Pay particular attention to capitalisation."
+echo "For example, the image name for QTLtools is [qtltools] but the command is [QTLtools]."
+echo "Press <Enter> or <Return> to accept the default value in brackets."
+echo "But check carefully first."
+echo
+
 IFS="/"
 declare -a field=($image)
-
 read -p "Command [${field[-1]}]: " command
 command=${command:-${field[-1]}}
+
+echo "This tool does not (yet) handle man paths."
+echo "(And not all bioinformatics tools provide man pages anyway...)"
+echo "Be kind to users by providing a link to the reference manual for this tool."
+echo
+
 
 read -p "Reference URL: " reference
 reference=${reference:-"(reference not specified)"}
@@ -27,9 +54,10 @@ echo "tag=$tag" >> $config_filename
 echo "command=$command" >> $config_filename
 echo "reference=$reference" >> $config_filename
 echo
-echo "Created config file as $config_filename"
+echo "Created config file as $config_filename in current working directory."
 echo
+echo "Contents of config file:"
 cat $config_filename
 echo
-echo "To create wrapper file and modulefile..."
+echo "Run the following command to download the container and create a wrapper file and modulefile..."
 echo "make_mod $config_filename"

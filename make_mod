@@ -6,8 +6,7 @@ set -e
 config=$1
 set -o allexport
 source $config
-# TODO: set $image_cache in modulefile
-# image_cache=/share/ClusterShare/software/contrib/singularity
+
 installation_dir=/share/ClusterShare/software/contrib/johree/img2mod
 set +o allexport
 
