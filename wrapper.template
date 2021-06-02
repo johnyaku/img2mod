@@ -11,5 +11,6 @@ image_file=${image_cache}/${command}_${tag}.sif
 # Remove the --no-home flat to allow /home/$USER to be bound WITH CARE -- some images will break
 singularity exec --cleanenv --no-home \
   --bind ${SINGULARITY_BIND:-/share} \
+  --bind ${image_cache}/${command}/${tag}/fakehome:$HOME \
   $image_file $command $@
 

@@ -17,9 +17,12 @@ echo "Tag: " $tag
 echo "Command: " $command
 echo "Reference: " $reference
 
-# Copy wrapper script template and prepare for editing
+# Create directories
 command_path=${image_cache}/wrappers/${command}/${tag}
 mkdir -p $command_path
+mkdir -p $command_path/fakehome
+
+# Copy wrapper script template and prepare for editing
 cp $installation_dir/wrapper.template $command_path/$command
 cd $command_path
 echo "Creating wrapper for $command at $command_path"
