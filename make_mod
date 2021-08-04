@@ -6,51 +6,58 @@ set -e
 config=$1
 set -o allexport
 source $config
-
 installation_dir=/share/ClusterShare/software/contrib/johree/img2mod
 set +o allexport
 
 # Report config values
-echo "Image cache:" $image_cache
-echo "Image: " $image
-echo "Tag: " $tag
-echo "Command: " $command
-echo "Reference: " $reference
+echo -e "Image cache: \t" $image_cache
+echo -e "Tool: \t" $tool
+echo -e "Repo: \t" $repo
+echo -e "Image: \t" $image
+echo -e "Tag: \t" $tag
+echo -e "Command: \t" $command
+echo -e "Reference: \t" $reference
+echo 
 
 # Create directories
-command_path=${image_cache}/wrappers/${command}/${tag}
-mkdir -p $command_path
-mkdir -p $command_path/fakehome
+tool_path=${image_cache}/wrappers/${tool}/${tag}
+mkdir -p $tool_path
+mkdir -p $tool_path/fakehome
 
 # Copy wrapper script template and prepare for editing
-cp $installation_dir/wrapper.template $command_path/$command
-cd $command_path
-echo "Creating wrapper for $command at $command_path"
+cp $installation_dir/wrapper.template $tool_path/$command
+cd $tool_path
+echo "Creating wrapper for $tool at "
+echo "$tool_path/$command"
 
 # Replace fields with variables
 sed -i "s|CACHE|$image_cache|g" $command
 sed -i "s|IMAGE|$image|g" $command
 sed -i "s|TAG|$tag|g" $command
 sed -i "s|COMMAND|$command|g" $command
+sed -i "s|TOOL|$tool|g" $command
 # Make wrapper executable
 chmod +x $command
 echo "Wrapper created"
+echo 
 
 # Copy modulefile template and prepare for editing
-module_path=/share/ClusterShare/Modules/modulefiles/contrib/centos7.8/${USER}/${command}
+module_path=/share/ClusterShare/Modules/modulefiles/contrib/centos7.8/${USER}/${tool}
 cd $image_cache
 mkdir -p $module_path
 cp $installation_dir/modulefile.template $module_path/$tag
 cd $module_path
-echo "Creating modulefile for $command version $tag at $module_path"
+echo "Creating modulefile for $tool version $tag at"
+echo "$module_path/$tag"
 
 # Replace fields with variables
+sed -i "s|TOOL|$tool|g" $tag
 sed -i "s|CACHE|$image_cache|g" $tag
 sed -i "s|COMMAND|$command|g" $tag
 sed -i "s|TAG|$tag|g" $tag
-sed -i "s|USER|$USER|g" $tag
 sed -i "s|REFERENCE|$reference|g" $tag
 echo "Modulefile created"
+echo 
 
 # Download docker image and convert to singularity format (SIF)
 # Computationally intensive, so submit as a job
@@ -60,4 +67,4 @@ echo "It may take a few minutes to download and convert the Singularity image"
 echo "You will receive an email notification when it is ready"
 echo
 echo "Load the module as follows: "
-echo "module load ${USER}/${command}/${tag}"
+echo "module load ${USER}/${tool}/${tag}"

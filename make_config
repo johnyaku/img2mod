@@ -11,16 +11,38 @@ echo
 
 read -p "Enter docker pull string: " docker pull string
 
+# First extract tag
 IFS=":"
 declare -a field=($string)
-
-image=${field[0]}
+image_repo=${field[0]}
 tag=${field[1]}
 
+# Next extract host and repository
+IFS="/"
+declare -a field=($image_repo)
+image=${field[-1]}
+if [ "${#field[@]}" -eq "2" ]; then
+  repo=${field[0]}
+elif [ "${#field[@]}" -eq "3" ]; then
+  repo=${field[0]}/${field[1]} 
+else
+  echo "Malformed docker pull string"
+  exit 1
+fi
+
 echo
-echo "Detected the following image and tag..."
-echo "Image: $image"
-echo "Tag: $tag"
+echo "Detected the following repo, image and tag..."
+echo -e "Repo: \t $repo"
+echo -e "Image: \t $image"
+echo -e "Tag: \t $tag"
+echo
+
+echo "Enter the name of the tool (the name to be used for the module)"
+echo "Usually this is the same as the image name, but not always."
+echo "Press <Enter> or <Return> to accept the default value in brackets."
+
+read -p "Tool [$image]: " tool
+tool=${tool:-$image}
 echo
 
 echo "Enter the containerised command."
@@ -32,10 +54,8 @@ echo "Press <Enter> or <Return> to accept the default value in brackets."
 echo "But check carefully first."
 echo
 
-IFS="/"
-declare -a field=($image)
-read -p "Command [${field[-1]}]: " command
-command=${command:-${field[-1]}}
+read -p "Command [$image}]: " command
+command=${command:-$image}
 
 echo "This tool does not (yet) handle man paths."
 echo "(And not all bioinformatics tools provide man pages anyway...)"
@@ -46,9 +66,17 @@ echo
 read -p "Reference URL: " reference
 reference=${reference:-"(reference not specified)"}
 IFS=" "
+echo
 
-config_filename=${command}_${tag}.config
+config_filename=${tool}_${tag}.config
+if [ -e $config_filename ]; then
+  echo "File already exists: $config_filename"
+  echo "Delete or rename, then try again"
+  exit 1
+fi
 touch $config_filename
+echo "tool=$tool" >> $config_filename 
+echo "repo=$repo" >> $config_filename 
 echo "image=$image" >> $config_filename 
 echo "tag=$tag" >> $config_filename
 echo "command=$command" >> $config_filename

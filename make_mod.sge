@@ -6,13 +6,15 @@
 #$ -e /share/ClusterShare/software/contrib/singularity/logs 
 #$ -l mem_requested=16G 
 #$ -m bae 
-#$ -M j.reeves@garvan.org.au 
+#$ -M $USER@garvan.org.au
 
 set -euxo 
 
-echo "Image cache: " $image_cache
-echo "Image: " $image
-echo "Tag: " $tag
+echo -e "Image cache: \t" $image_cache
+echo -e "Tool: \t" $tool
+echo -e "Repo: \t" $repo
+echo -e "Image: \t" $image
+echo -e "Tag: \t" $tag
 
 cd $image_cache
-singularity pull docker://${image}:${tag}
+singularity pull docker://${repo}/${image}:${tag}

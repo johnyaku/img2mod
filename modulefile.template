@@ -8,22 +8,23 @@ proc ModulesHelp { } {
     puts stderr "\tThis module provides support for ${software}"
     puts stderr "\n\tVersion: ${version}"
 }
-set software   COMMAND
+set software  TOOL 
 set version TAG
-set where   USER
 
-module-whatis "Loads a containerised COMMAND as a module"
+module-whatis "Loads a containerised TOOL as a module"
 
-set prefix "CACHE/wrappers/COMMAND/TAG"
+set prefix "CACHE/wrappers/TOOL/TAG"
 
 prepend-path PATH ${prefix}
 
 # Don't forget to escape \[ characters in usage statements.
 if { [ module-info mode load ] } {
-    puts stderr "See REFERENCE for information on how to use COMMAND"
+    puts stderr "See REFERENCE for information on how to use TOOL"
+    puts stderr "Note that the command for using TOOL is COMMAND"
     puts stderr "When using this tool, your fake home directory is "
-    puts stderr "CACHE/wrappers/COMMAND/TAG/home/USER"
+    puts stderr "CACHE/wrappers/TOOL/TAG/home/$env(USER)"
     puts stderr "By default, this tool can only access files on /share"
     puts stderr "Set the SINGULARITY_BIND variable to bind paths on other volumes"
+    puts stderr "."
 }
 

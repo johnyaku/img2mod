@@ -1,17 +1,18 @@
-# Wrapper for containerised COMMAND version TAG
+# Wrapper for containerised TOOL version TAG
 
 # Define which image to run
 image_cache=CACHE
 image=IMAGE
+tool=TOOL
 tag=TAG
 command=COMMAND
-image_file=${image_cache}/${command}_${tag}.sif
+image_file=${image_cache}/${image}_${tag}.sif
 
-fake_home=${image_cache}/wrappers/${command}/${tag}/home/$USER
+fake_home=${image_cache}/wrappers/${tool}/${tag}/home/$USER
 mkdir -p $fake_home
 
 # run image, binding /share and passing parameters through to COMMAND
-# Remove the --no-home flat to allow /home/$USER to be bound WITH CARE -- some images will break
+# Remove the --no-home flag to allow /home/$USER to be bound WITH CARE -- some images will break
 singularity exec --cleanenv --no-home \
   --bind ${SINGULARITY_BIND:-/share} \
   --bind ${fake_home}:$HOME \
